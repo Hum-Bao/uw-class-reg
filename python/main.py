@@ -31,10 +31,8 @@ def create_browser():
     time.sleep(1)
     # Find and enter username and password
     element = driver.find_element(By.NAME, "j_username")
-    # element.send_keys("kbricks@uw.edu")
     element.send_keys(USERNAME)
     element = driver.find_element(By.NAME, "j_password")
-    # element.send_keys("Gamerman69!")
     element.send_keys(PASSWORD)
     element = driver.find_element(By.NAME, "_eventId_proceed")
     element.click()
