@@ -1,0 +1,8 @@
+#Environment Variables File
+.env
+
+#Dirs
+/__pycache__
+/mail_services/__pycache__
+/.venv
+/.cache
