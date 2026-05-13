@@ -222,8 +222,10 @@ def handle_schedule_registration(
     if selected_quarter is None:
         return
 
-    quarter_choice, quarter_name, quarter_code = selected_quarter
-    print(f"Selected Quarter {quarter_choice} ({quarter_name}) - {quarter_code}")
+    _, quarter_name, quarter_code = selected_quarter
+    print(
+        f"Selected term: {quarter_name} (UW term {quarter_code})",
+    )
 
     print("\nEnter the time you want to register for classes.")
     print("Format: HH:MM or HH:MM:SS (e.g., 14:30 or 14:30:45)")
@@ -265,10 +267,12 @@ def handle_schedule_registration_on_email(
     if selected_quarter is None:
         return
 
-    quarter_choice, quarter_name, quarter_code = selected_quarter
+    _, quarter_name, quarter_code = selected_quarter
     _clear_console()
     print("Email Trigger Registration")
-    print(f"Selected Quarter {quarter_choice} ({quarter_name}) - {quarter_code}")
+    print(
+        f"Selected term: {quarter_name} (UW term {quarter_code})",
+    )
     print("\nChoose email trigger method:")
     print("1. Gmail API")
     print("2. Other (IMAP)")
@@ -281,7 +285,6 @@ def handle_schedule_registration_on_email(
         _handle_email_trigger_gmail_api(
             client=client,
             quarter_code=quarter_code,
-            quarter_choice=quarter_choice,
             quarter_name=quarter_name,
             register_add_courses_with_retry=register_add_courses_with_retry,
         )
@@ -290,7 +293,6 @@ def handle_schedule_registration_on_email(
         _handle_email_trigger_imap(
             client=client,
             quarter_code=quarter_code,
-            quarter_choice=quarter_choice,
             quarter_name=quarter_name,
             register_add_courses_with_retry=register_add_courses_with_retry,
         )
@@ -303,14 +305,15 @@ def _handle_email_trigger_gmail_api(
     *,
     client: UWAPI.UWAPI,
     quarter_code: str,
-    quarter_choice: str,
     quarter_name: str,
     register_add_courses_with_retry: RegisterAddCoursesWithRetry,
 ) -> None:
     """Run email-trigger registration using Gmail API polling."""
     _clear_console()
     print("Email Trigger Registration Setup")
-    print(f"Selected Quarter {quarter_choice} ({quarter_name}) - {quarter_code}")
+    print(
+        f"Selected term: {quarter_name} (UW term {quarter_code})",
+    )
     print("\nPreparing Gmail API validation...")
 
     username = os.getenv("IMAP_USERNAME", "").strip()
@@ -352,14 +355,15 @@ def _handle_email_trigger_imap(
     *,
     client: UWAPI.UWAPI,
     quarter_code: str,
-    quarter_choice: str,
     quarter_name: str,
     register_add_courses_with_retry: RegisterAddCoursesWithRetry,
 ) -> None:
     """Run email-trigger registration using IMAP polling."""
     _clear_console()
     print("Email Trigger Registration Setup")
-    print(f"Selected Quarter {quarter_choice} ({quarter_name}) - {quarter_code}")
+    print(
+        f"Selected term: {quarter_name} (UW term {quarter_code})",
+    )
     print("\nPreparing IMAP validation...")
 
     imap_server = os.getenv("IMAP_SERVER", "imap.gmail.com").strip()

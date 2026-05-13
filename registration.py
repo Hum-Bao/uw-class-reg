@@ -15,40 +15,73 @@ WINTER_QUARTER_END_MONTH = 3
 SPRING_QUARTER_END_MONTH = 6
 SUMMER_QUARTER_END_MONTH = 9
 
+QUARTER_SELECTION_OFFSETS = (
+    (-1, "Previous Quarter"),
+    (0, "Current Quarter"),
+    (1, "Next Quarter"),
+    (2, "Quarter After Next"),
+)
+
+
+def _calendar_quarter_for_month(month: int) -> int:
+    """Return the UW calendar quarter number for a month."""
+    if month <= WINTER_QUARTER_END_MONTH:
+        return 1
+    if month <= SPRING_QUARTER_END_MONTH:
+        return 2
+    if month <= SUMMER_QUARTER_END_MONTH:
+        return 3
+    return 4
+
+
+def _shift_quarter(year: int, quarter: int, offset: int) -> tuple[int, int]:
+    """Shift a calendar quarter by an offset and return (year, quarter)."""
+    total_quarters = year * 4 + (quarter - 1) + offset
+    shifted_year = total_quarters // 4
+    shifted_quarter = total_quarters % 4 + 1
+    return shifted_year, shifted_quarter
+
 
 def detect_current_quarter_code(reference_date: datetime.date | None = None) -> str:
     """Return current quarter code in YYYYQ format."""
     if reference_date is None:
         reference_date = datetime.datetime.now(tz=datetime.timezone.utc).date()
 
-    month = reference_date.month
-    if month <= WINTER_QUARTER_END_MONTH:
-        quarter = 1
-    elif month <= SPRING_QUARTER_END_MONTH:
-        quarter = 2
-    elif month <= SUMMER_QUARTER_END_MONTH:
-        quarter = 3
-    else:
-        quarter = 4
+    quarter = _calendar_quarter_for_month(reference_date.month)
 
     return f"{reference_date.year}{quarter}"
 
 
-def select_current_year_quarter(action_label: str) -> tuple[str, str, str] | None:
-    """Prompt user to select a quarter for the current year."""
-    current_year = str(datetime.datetime.now(tz=datetime.timezone.utc).year)
-    print(f"Select a quarter for {action_label} in {current_year}:")
-    print("1. Quarter 1 (Winter)")
-    print("2. Quarter 2 (Spring)")
-    print("3. Quarter 3 (Summer)")
+def select_current_year_quarter(
+    action_label: str,
+) -> tuple[str, str, str] | None:
+    """Prompt user to select previous/current/next two quarters."""
+    reference_date = datetime.datetime.now(tz=datetime.timezone.utc).date()
+    current_year = reference_date.year
+    current_quarter = _calendar_quarter_for_month(reference_date.month)
 
-    quarter_choice = input("Enter quarter number (1-3): ").strip()
-    if quarter_choice not in QUARTER_LABELS:
-        print("Invalid quarter choice. Please enter 1, 2, or 3.")
+    choice_map: dict[str, tuple[str, str, int]] = {}
+    print(f"Select a quarter for {action_label}:")
+    for index, (offset, descriptor) in enumerate(QUARTER_SELECTION_OFFSETS, start=1):
+        term_year, term_quarter = _shift_quarter(
+            current_year,
+            current_quarter,
+            offset,
+        )
+        quarter_number = str(term_quarter)
+        quarter_label = QUARTER_LABELS[quarter_number]
+        menu_key = str(index)
+        choice_map[menu_key] = (quarter_label, quarter_number, term_year)
+        print(f"{menu_key}. {descriptor} ({quarter_label} {term_year})")
+
+    quarter_choice = input("Enter option number (1-4): ").strip()
+    if quarter_choice not in choice_map:
+        print("Invalid quarter choice. Please enter 1, 2, 3, or 4.")
         return None
 
-    quarter_code = f"{current_year}{quarter_choice}"
-    quarter_name = QUARTER_LABELS[quarter_choice]
+    quarter_label, quarter_number, term_year = choice_map[quarter_choice]
+    quarter_code = f"{term_year}{quarter_number}"
+    quarter_name = f"{quarter_label} {term_year}"
     return quarter_choice, quarter_name, quarter_code
 
 

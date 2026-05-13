@@ -77,13 +77,12 @@ def handle_view_previous_registrations(client: UWAPI.UWAPI) -> None:
     if selected_quarter is None:
         return
 
-    quarter_choice, quarter_name, quarter_code = selected_quarter
+    _, quarter_name, quarter_code = selected_quarter
     show_registration_summary(
         client,
         quarter_code=quarter_code,
         success_message=(
-            "Successfully fetched registration summary for "
-            f"Quarter {quarter_choice} ({quarter_name})."
+            f"Successfully fetched registration summary for {quarter_name}."
         ),
     )
 
@@ -94,8 +93,10 @@ def handle_register_for_classes(client: UWAPI.UWAPI) -> None:
     if selected_quarter is None:
         return
 
-    quarter_choice, quarter_name, quarter_code = selected_quarter
-    print(f"Selected Quarter {quarter_choice} ({quarter_name}) - {quarter_code}")
+    _, quarter_name, quarter_code = selected_quarter
+    print(
+        f"Selected term: {quarter_name} (UW term {quarter_code})",
+    )
 
     print("\nSelect registration method:")
     print("1. Import from MyPlan")
@@ -116,8 +117,10 @@ def handle_edit_registration(client: UWAPI.UWAPI) -> None:
     if selected_quarter is None:
         return
 
-    quarter_choice, quarter_name, quarter_code = selected_quarter
-    print(f"Selected Quarter {quarter_choice} ({quarter_name}) - {quarter_code}")
+    _, quarter_name, quarter_code = selected_quarter
+    print(
+        f"Selected term: {quarter_name} (UW term {quarter_code})",
+    )
 
     print("\nSelect edit action:")
     print("1. Drop Class")
@@ -147,7 +150,7 @@ def _build_view_menu(client: UWAPI.UWAPI) -> MenuDefinition:
             ),
             MenuOption(
                 key="2",
-                label="View Registrations (Current Year)",
+                label="View Registrations (Recent/Upcoming)",
                 action=partial(
                     _run_action,
                     partial(handle_view_previous_registrations, client),
